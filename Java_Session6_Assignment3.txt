@@ -1,0 +1,212 @@
+3. Show deposit and withdraw functionality for the Online Banking Application (Using synchronized) :
+
+public class DeWi {
+public static DeWi DeWi;
+private static int balance = 1000;
+private Person person;
+
+DeWi() {
+}
+
+public static DeWi getDeWi(Person p) {
+    if (DeWi == null) {
+        DeWi = new DeWi();
+    }
+    DeWi.person = p;
+    return DeWi;
+}
+
+public static int getBal() {
+    return balance;
+}
+
+public synchronized void withdraw(int bal) {
+    try {
+
+        if (balance >= bal) {
+            System.out.println(person.getName() + " " + "is trying to withdraw");
+            try {
+                Thread.sleep(100);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            balance = balance - bal;
+            System.out.println(person.getName() + " " + "has withdrawn");
+        } else {
+            System.out.println(person.getName() + " " + "doesn't have enough money to withdraw ");
+        }
+        System.out.println(person.getName() + " " + " withdraw Rs." + balance);
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+
+public synchronized void deposit(int bal) {
+    try {
+        if (bal > 0) {
+            System.out.println(person.getName() + " " + " is trying to deposit");
+            try {
+                Thread.sleep(100);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            balance = balance + bal;
+            System.out.println(person.getName() + " " + "has deposited");
+        } else {
+            System.out.println(person.getName() + " " + "doesn't have enough money to deposit");
+        }
+        System.out.println(person.getName() + " " + " deposit Rs." + balance);
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}}
+
+
+public class Person {
+
+	private String name;
+
+	public Person(String name) {
+	    this.name = name;
+	}
+
+	public String getName() {
+	    return name;
+	}
+
+	public void setName(String name) {
+	    this.name = name;
+	}
+
+	@Override
+	public String toString() {
+	    return name;
+	}}
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public class ThreadExercise extends Thread implements Runnable {
+
+private Person person;
+
+public ThreadExercise(Person p) {
+    this.person = p;
+}
+
+public static void main(String[] args) {
+
+    ThreadExercise ts1 = new ThreadExercise(new Person("person 1"));
+    ts1.start();
+    ThreadExercise ts2 = new ThreadExercise(new Person("person 2"));
+    ts2.start();
+
+}
+
+@Override
+public void run() {
+    for (int i = 0; i <3; i++) {
+        try {
+            DeWi acc = DeWi.getDeWi(person);
+            acc.withdraw(100);
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(ThreadExercise.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            if (acc.getBal() < 0) {
+                System.out.println("DeWi is overdrawn!");
+            }
+            acc.deposit(200);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    System.out.println("Final Acc balance is Rs." + DeWi.getBal());
+}}
+
+
+Result :
+
+person 2 is trying to withdraw
+person 2 has withdrawn
+person 2  withdraw Rs.900
+person 2 is trying to withdraw
+person 2 has withdrawn
+person 2  withdraw Rs.800
+person 2  is trying to deposit
+person 2 has deposited
+person 2  deposit Rs.1000
+person 1 is trying to withdraw
+person 1 has withdrawn
+person 1  withdraw Rs.900
+person 1  is trying to deposit
+person 1 has deposited
+person 1  deposit Rs.1100
+person 2 is trying to withdraw
+person 2 has withdrawn
+person 2  withdraw Rs.1000
+person 2  is trying to deposit
+person 2 has deposited
+person 2  deposit Rs.1200
+person 1 is trying to withdraw
+person 1 has withdrawn
+person 1  withdraw Rs.1100
+person 1  is trying to deposit
+person 1 has deposited
+person 1  deposit Rs.1300
+person 2 is trying to withdraw
+person 2 has withdrawn
+person 2  withdraw Rs.1200
+person 2  is trying to deposit
+person 2 has deposited
+person 2  deposit Rs.1400
+Final Acc balance is Rs.1400
+person 2  is trying to deposit
+person 2 has deposited
+person 2  deposit Rs.1600
+Final Acc balance is Rs.1600
+
+
+Output without using synchronized :
+
+person 1 is trying to withdraw
+person 2 is trying to withdraw
+person 2 is complete the withdraw
+person 2  withdraw Rs.900
+person 2 is complete the withdraw
+person 2  withdraw Rs.800
+person 2  is try to deposit
+person 2  is try to deposit
+person 2 is complete the deposit
+person 2  deposit Rs.1000
+person 1 is trying to withdraw
+person 1 is complete the deposit
+person 1  deposit Rs.1200
+person 2 is trying to withdraw
+person 2 is complete the withdraw
+person 2  withdraw Rs.1100
+person 2 is complete the withdraw
+person 2  withdraw Rs.1000
+person 2  is try to deposit
+person 2  is try to deposit
+person 2 is complete the deposit
+person 2  deposit Rs.1200
+person 1 is trying to withdraw
+person 1 is complete the deposit
+person 1  deposit Rs.1400
+person 2 is trying to withdraw
+person 2 is complete the withdraw
+person 2  withdraw Rs.1300
+person 2 is complete the withdraw
+person 2  withdraw Rs.1200
+person 2  is try to deposit
+person 2  is try to deposit
+person 2 is complete the deposit
+person 2  deposit Rs.1400
+Final Acc balance is Rs.1400
+person 2 is complete the deposit
+person 2  deposit Rs.1600
+Final Acc balance is Rs.1600
